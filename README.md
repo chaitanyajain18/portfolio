@@ -1,4 +1,4 @@
-# Portofolio Web — [chaitanyajain18]
+# Portfolio Web — [chaitanyajain18]
 
 Selamat datang di portofolio web pribadi saya! 🌐  
 Dibuat dengan React + Vite, ini adalah showcase dari project, skill, dan karya yang ingin saya bagikan.
@@ -44,7 +44,7 @@ npm run build
 ## &#x20;Quick Preview
 
 Jika sudah di-deploy (contoh: GitHub Pages, Netlify, Vercel), kamu bisa tambahkan link deploy di sini, misalnya:
-[🔗 Lihat versi live](https://chaitanyajain18.github.io/portofolio/)
+[🔗 Lihat versi live](https://chaitanyajain18.github.io/portfolio/)
 
 ## Tentang Saya
 
@@ -57,4 +57,4 @@ Saya seorang Developer yang suka bikin aplikasi web ringan dengan tampilan moder
 ---
 
 
-[1]: https://github.com/chaitanyajain18/portofolio "GitHub - chaitanyajain18/portofolio"
+[1]: https://github.com/chaitanyajain18/portfolio "GitHub - chaitanyajain18/portfolio"
