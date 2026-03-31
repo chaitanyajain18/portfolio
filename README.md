@@ -51,9 +51,8 @@ Jika sudah di-deploy (contoh: GitHub Pages, Netlify, Vercel), kamu bisa tambahka
 Hai, saya Faris Edrik P (username GitHub: `chaitanyajain18`).
 Saya seorang Developer yang suka bikin aplikasi web ringan dengan tampilan modern dan performa tinggi. Scroll aja di project saya, dan jangan sungkan untuk reach out kalau ada pertanyaan!
 
-* **Email:** [email\_farisedrik21@gmail.com](mailto:email_farisedrik21@gmail.com)
-* **LinkedIn:** [linkedin.com/in/farisedp](https://www.linkedin.com/in/farisedp/)
-* **Instagram:** @farisedrikprayoga
+* **Email:** [email\jainchaitanya6@gmail.com](mailto:email_jainchaitanya6@gmail.com)
+* **LinkedIn:** [https://www.linkedin.com/in/chaitanya-jain/](https://www.linkedin.com/in/chaitanya-jain-32b262257/))
 
 ---
 
