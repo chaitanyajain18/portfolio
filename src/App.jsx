@@ -1,328 +1,639 @@
-import { useRef, useState, useEffect } from "react";
-import ProfileCard from "./components/ProfileCard/ProfileCard";
-import ShinyText from "./components/ShinyText/ShinyText";
-import BlurText from "./components/BlurText/BlurText";
-import ScrambledText from "./components/ScrambledText/ScrambledText";
-import SplitText from "./components/SplitText/SplitText";
-import Lanyard from "./components/Lanyard/Lanyard";
-import GlassIcons from "./components/GlassIcons/GlassIcons";
+import { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Win2KWindow from "./components/Win2KWindow";
+import ProjectModal from "./components/ProjectModal/ProjectModal";
 import { listTools, listProyek } from "./data";
-import ChromaGrid from "./components/ChromaGrid/ChromaGrid";
-import ProjectModal from "./components/ProjectModal/ProjectModal"; // <-- IMPORT MODAL
-import Aurora from "./components/Aurora/Aurora";
-import AOS from 'aos';
-import ChatRoom from "./components/ChatRoom";
-import 'aos/dist/aos.css'; // You can also use <link> for styles
-// ..
-AOS.init();
+
+/* ─── tiny helpers ──────────────────────────────────────────── */
+
+/** Progress bar (Win2K striped style) */
+const ProgressBar = ({ value = 70 }) => (
+  <div className="win2k-progress-track" style={{ width: "100%" }}>
+    <div className="win2k-progress-fill" style={{ width: `${value}%` }} />
+  </div>
+);
+
+/** Stat badge */
+const StatBadge = ({ value, label }) => (
+  <div
+    style={{
+      textAlign: "center",
+      padding: "8px 12px",
+      background: "var(--color-window-bg)",
+      border: "2px solid var(--color-border-dark)",
+      borderTop: "2px solid var(--color-border-light)",
+      borderLeft: "2px solid var(--color-border-light)",
+      minWidth: "90px",
+    }}
+  >
+    <div
+      style={{
+        fontSize: "20px",
+        fontWeight: "bold",
+        color: "var(--color-titlebar-start)",
+        fontFamily: "var(--font-ui)",
+      }}
+    >
+      {value}
+    </div>
+    <div style={{ fontSize: "10px", color: "var(--color-text-muted)" }}>{label}</div>
+  </div>
+);
+
+/** Win2K dialog-style section header */
+const SectionHeader = ({ children }) => (
+  <div
+    style={{
+      background: "linear-gradient(to right, var(--color-titlebar-start), var(--color-titlebar-end))",
+      color: "#fff",
+      fontSize: "11px",
+      fontWeight: "bold",
+      padding: "2px 8px",
+      height: "18px",
+      display: "flex",
+      alignItems: "center",
+      userSelect: "none",
+      gap: "6px",
+      marginBottom: "8px",
+    }}
+  >
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <rect x="0" y="0" width="5" height="5" fill="#f25022" />
+      <rect x="6" y="0" width="5" height="5" fill="#80ba01" />
+      <rect x="0" y="6" width="5" height="5" fill="#02a4ef" />
+      <rect x="6" y="6" width="5" height="5" fill="#ffb902" />
+    </svg>
+    {children}
+  </div>
+);
+
+/* ─── main App ──────────────────────────────────────────────── */
 
 function App() {
-  const aboutRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  const [selectedProject, setSelectedProject] = useState(null); // null = modal tertutup
-
-  const handleProjectClick = (project) => {
-    setSelectedProject(project);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedProject(null);
-  };
-  // -------------------------
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [activeTab, setActiveTab] = useState("about");
 
   useEffect(() => {
     const isReload =
       performance.getEntriesByType("navigation")[0]?.type === "reload";
-
     if (isReload) {
-      // Ambil path tanpa hash
       const baseUrl = window.location.origin + "/portofolio/";
       window.location.replace(baseUrl);
     }
   }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    if (aboutRef.current) {
-      observer.observe(aboutRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <>
-      <div className="absolute top-0 left-0 w-full h-full -z-10 ">
-        <Aurora
-          colorStops={["#577870", "#1F97A6", "#127B99"]}
-          blend={0.5}
-          amplitude={1.0}
-          speed={0.5}
-        />
-      </div>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      className="win2k-scanlines"
+      style={{
+        minHeight: "100vh",
+        paddingBottom: "32px", /* room for fixed taskbar */
+        fontFamily: "var(--font-ui)",
+        fontSize: "11px",
+      }}
+    >
+      <Navbar />
 
-        <div className="hero grid md:grid-cols-2 items-center pt-10 xl:gap-0 gap-6 grid-cols-1">
-          <div className="animate__animated animate__fadeInUp animate__delay-3s">
-            <div className="flex items-center gap-3 mb-6 bg bg-zinc-800 w-fit p-4 rounded-2xl">
-              <img src="public/assets/tools/chaitanya copy.png" className="w-10 rounded-md" />
-              <q>Avoid or just undertake it</q>
-            </div>
-            <h1 className="text-5xl font-bold mb-6">
-              <ShinyText text="Hi I'm Chaitanya Jain" disabled={false} speed={3} className='custom-class' />
-            </h1>
-            <BlurText
-              text="A passionate application and web developer dedicated to crafting modern, high-performance digital experiences through innovative and user-friendly solutions."
-              delay={150}
-              animateBy="words"
-              direction="top"
-              className=" mb-6"
-            />
-            <div className="flex items-center sm:gap-4 gap-2">
-              <a 
-                href="./assets/CV.pdf" 
-                download="Chaitanya_Jain_CV.pdf"
-                className="font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors"
+      {/* ── Desktop ── */}
+      <main
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "12px 12px 48px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+        }}
+      >
+        {/* ══ HERO WINDOW ══════════════════════════════════════ */}
+        <Win2KWindow
+          title="Welcome – Chaitanya Jain Portfolio"
+          id="home"
+        >
+          <SectionHeader>Hello, World!</SectionHeader>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              flexWrap: "wrap",
+              alignItems: "flex-start",
+            }}
+          >
+            {/* Left: avatar + badge */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "6px",
+                minWidth: "110px",
+              }}
+            >
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  overflow: "hidden",
+                  borderTop: "2px solid var(--color-border-dark)",
+                  borderLeft: "2px solid var(--color-border-dark)",
+                  borderRight: "2px solid var(--color-border-light)",
+                  borderBottom: "2px solid var(--color-border-light)",
+                  boxShadow: "inset 1px 1px 0 var(--color-border-darker)",
+                }}
               >
-                <ShinyText text="Download CV" disabled={false} speed={3} className="custom-class" />
-              </a>
-
-              <a href="#project" className="font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors">
-                <ShinyText text="Explore My Projects" disabled={false} speed={3} className="custom-class" />
-              </a>
-            </div>
-
-          </div>
-          <div className="md:ml-auto animate__animated animate__fadeInUp animate__delay-4s">
-            <ProfileCard
-              name="Chaitanya Jain "
-              title="Web Developer"
-              handle="chaitanyajain_18"
-              status="Online"
-              contactText="Contact Me"
-              avatarUrl="public/assets/tools/chaitanya copy.png"
-              showUserInfo={true}
-              enableTilt={true}
-              enableMobileTilt={false}
-              onContactClick={() => console.log('Contact clicked')}
-            />
-          </div>
-        </div>
-        {/* tentang */}
-        <div className="mt-15 mx-auto w-full max-w-[1600px] rounded-3xl border-[5px] border-violet-500/40 shadow-[0_0_30px_rgba(168,85,247,0.4)] bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1a1a] p-6" id="about">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-10 pt-0 px-8" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
-            <div className="basis-full md:basis-7/12 pr-0 md:pr-8 border-b md:border-b-0 md:border-r border-violet-500/30">
-              {/* Kolom kiri */}
-              <div className="flex-1 text-left">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-5">
-                  About Me
-                </h2>
-
-                <BlurText
-                  text="I’m Chaitanya Jain, Currently pursuing B.Tech in Electronic and Computer Engineering at Walchand Institute of Technology, Solapur. I have a proven ability to learn quickly and work effectively within teams, with hands-on experience in programming, web development, and robotics projects.
- I enjoy working with the latest technologies like Artificial Intelligence, Machine Learning, and cloud-based development, blending creativity with precision to deliver impactful solutions. I'm actively seeking internship and learning opportunities to build practical experience and contribute to innovative projects in software development. Clean Code Writing maintainable, scalable code Design Focus
-Creating beautiful, intuitive interfaces."
-                  delay={150}
-                  animateBy="words"
-                  direction="top"
-                  className="text-base md:text-lg leading-relaxed mb-10 text-gray-300"
+                <img
+                  src="public/assets/tools/chaitanya copy.png"
+                  alt="Chaitanya Jain"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
-
-                <div className="flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-y-8 sm:gap-y-0 mb-4 w-full">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl mb-1">
-                      10<span className="text-violet-500">+</span>
-                    </h1>
-                    <p>Project Finished</p>
-                  </div>
-                  <div>
-                    <h1 className="text-3xl md:text-4xl mb-1">
-                      3<span className="text-violet-500">+</span>
-                    </h1>
-                    <p>Years of Experience</p>
-                  </div>
-                  <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="600" data-aos-once="true">
-                    <h1 className="text-3xl md:text-4xl mb-1">
-                      7.81<span className="text-violet-500">/10.00</span>
-                    </h1>
-                    <p>GPA</p>
-                  </div>
-                </div>
-
-
-                <ShinyText
-                  text="Working with heart, creating with mind."
-                  disabled={false}
-                  speed={3}
-                  className="text-sm md:text-base text-violet-400"
+              </div>
+              {/* Online status indicator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  fontSize: "10px",
+                }}
+              >
+                <span
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "#00aa00",
+                    border: "1px solid #006600",
+                    display: "inline-block",
+                  }}
                 />
+                Online
+              </div>
+              <div
+                style={{
+                  background: "var(--color-window-bg)",
+                  padding: "2px 6px",
+                  fontSize: "10px",
+                  border: "1px solid var(--color-border-dark)",
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
+                chaitanyajain_18
               </div>
             </div>
 
-            {/* Kolom kanan */}
-            <div className="basis-full md:basis-5/12 pl-0 md:pl-8 overflow-hidden max-w-full flex justify-center ">
-              <Lanyard position={[0, 0, 15]} gravity={[0, -40, 0]} />
+            {/* Right: intro text */}
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <div
+                style={{
+                  border: "1px solid var(--color-border-dark)",
+                  padding: "6px 8px",
+                  background: "var(--color-window-face)",
+                  marginBottom: "8px",
+                  fontStyle: "italic",
+                  fontSize: "11px",
+                }}
+              >
+                &ldquo;Avoid or just undertake it&rdquo;
+              </div>
+
+              <h1
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  fontFamily: "var(--font-ui)",
+                  color: "var(--color-titlebar-start)",
+                  marginBottom: "6px",
+                }}
+              >
+                Hi, I&apos;m Chaitanya Jain
+              </h1>
+              <p style={{ marginBottom: "8px", lineHeight: "1.6", fontSize: "11px" }}>
+                A passionate application and web developer dedicated to crafting
+                modern, high-performance digital experiences through innovative and
+                user-friendly solutions.
+              </p>
+
+              {/* CTA buttons */}
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                <a
+                  href="./assets/CV.pdf"
+                  download="Chaitanya_Jain_CV.pdf"
+                  className="win2k-btn win2k-btn-primary"
+                  style={{ textDecoration: "none" }}
+                >
+                  Download CV
+                </a>
+                <button
+                  className="win2k-btn"
+                  onClick={() =>
+                    document
+                      .getElementById("project")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  View Projects
+                </button>
+              </div>
             </div>
           </div>
 
-        </div>
-        <div className="tools mt-32">
-          <h1 className="text-4xl/snug font-bold mb-4" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true" >Tools & Technologies</h1>
-          <p className="w-2/5 text-base/loose opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">My Profesional Skills</p>
-          <div className="tools-box mt-14 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+          {/* Status bar */}
+          <div className="win2k-statusbar" style={{ marginTop: "8px" }}>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>
+              Web Developer &nbsp;|&nbsp; B.Tech ECE – WIT Solapur
+            </div>
+            <div className="win2k-statusbar-panel">GPA: 7.81 / 10.00</div>
+          </div>
+        </Win2KWindow>
 
-            {listTools.map((tool) => (
-              <div
-                key={tool.id} data-aos="fade-up" data-aos-duration="1000" data-aos-delay={tool.dad} data-aos-once="true"
-                className="flex items-center gap-4 p-4 border border-zinc-700 rounded-xl bg-zinc-900/60 backdrop-blur-md hover:bg-zinc-800/80 transition-all duration-300 group shadow-lg"
+        {/* ══ ABOUT WINDOW ════════════════════════════════════ */}
+        <Win2KWindow title="About Me – Properties" id="about">
+          <SectionHeader>System Properties – User Info</SectionHeader>
+
+          {/* Tab strip */}
+          <div className="win2k-tabs">
+            {["about", "stats", "education"].map((tab) => (
+              <button
+                key={tab}
+                className={`win2k-tab${activeTab === tab ? " active" : ""}`}
+                onClick={() => setActiveTab(tab)}
+                style={{ background: "none", border: "none", cursor: "default" }}
               >
-                <img
-                  src={tool.gambar}
-                  alt="Tools Image"
-                  className="w-16 h-16 object-contain bg-zinc-800 p-2 rounded-lg group-hover:bg-zinc-900 transition-all duration-300"
-                />
-                <div className="flex flex-col overflow-hidden">
-                  <div className="truncate">
-                    <ShinyText
-                      text={tool.nama}
-                      disabled={false}
-                      speed={3}
-                      className="text-lg font-semibold block"
-                    />
-                  </div>
-                  <p className="text-sm text-zinc-400 truncate">{tool.ket}</p>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab panels */}
+          <div
+            style={{
+              background: "var(--color-window-face)",
+              border: "2px solid var(--color-border-dark)",
+              borderTop: "none",
+              padding: "10px",
+              marginBottom: "6px",
+            }}
+          >
+            {activeTab === "about" && (
+              <p style={{ lineHeight: "1.7", fontSize: "11px" }}>
+                I&apos;m Chaitanya Jain, currently pursuing B.Tech in Electronic and
+                Computer Engineering at Walchand Institute of Technology, Solapur.
+                I have a proven ability to learn quickly and work effectively within
+                teams, with hands-on experience in programming, web development, and
+                robotics projects. I enjoy working with the latest technologies like
+                Artificial Intelligence, Machine Learning, and cloud-based development,
+                blending creativity with precision to deliver impactful solutions.
+                I&apos;m actively seeking internship and learning opportunities to build
+                practical experience and contribute to innovative projects in software
+                development.
+              </p>
+            )}
+
+            {activeTab === "stats" && (
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", padding: "6px 0" }}>
+                <StatBadge value="10+" label="Projects Finished" />
+                <StatBadge value="3+" label="Years Experience" />
+                <StatBadge value="7.81" label="GPA / 10.00" />
+              </div>
+            )}
+
+            {activeTab === "education" && (
+              <div>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    fontSize: "11px",
+                  }}
+                >
+                  <tbody>
+                    {[
+                      ["Degree", "B.Tech – Electronic & Computer Engineering"],
+                      ["Institute", "Walchand Institute of Technology, Solapur"],
+                      ["GPA", "7.81 / 10.00"],
+                      ["Focus", "AI, ML, Web Dev, IoT, Robotics"],
+                    ].map(([k, v]) => (
+                      <tr key={k}>
+                        <td
+                          style={{
+                            padding: "4px 8px",
+                            fontWeight: "bold",
+                            background: "var(--color-window-bg)",
+                            border: "1px solid var(--color-border-dark)",
+                            width: "120px",
+                          }}
+                        >
+                          {k}
+                        </td>
+                        <td
+                          style={{
+                            padding: "4px 8px",
+                            border: "1px solid var(--color-border-dark)",
+                          }}
+                        >
+                          {v}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="win2k-statusbar">
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>
+              Working with heart, creating with mind.
+            </div>
+          </div>
+        </Win2KWindow>
+
+        {/* ══ TOOLS WINDOW ════════════════════════════════════ */}
+        <Win2KWindow title="Device Manager – Tools & Technologies">
+          <SectionHeader>Installed Tools &amp; Frameworks</SectionHeader>
+
+          <div
+            className="win2k-sunken"
+            style={{
+              background: "var(--color-inset-bg)",
+              padding: "4px",
+              maxHeight: "320px",
+              overflowY: "auto",
+            }}
+          >
+            <table className="win2k-listview" style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th style={{ width: "32px" }}>Icon</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listTools.map((tool) => (
+                  <tr key={tool.id}>
+                    <td>
+                      <img
+                        src={tool.gambar}
+                        alt={tool.nama}
+                        style={{ width: "16px", height: "16px", objectFit: "contain" }}
+                      />
+                    </td>
+                    <td>{tool.nama}</td>
+                    <td style={{ color: "var(--color-text-muted)" }}>{tool.ket}</td>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          fontSize: "10px",
+                          color: "#006600",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: "6px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            background: "#00aa00",
+                            display: "inline-block",
+                          }}
+                        />
+                        Working
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="win2k-statusbar" style={{ marginTop: "6px" }}>
+            <div className="win2k-statusbar-panel">
+              {listTools.length} devices listed
+            </div>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>
+              All devices are working properly
+            </div>
+          </div>
+        </Win2KWindow>
+
+        {/* ══ PROJECTS WINDOW ════════════════════════════════ */}
+        <Win2KWindow title="My Computer – Projects Explorer" id="project">
+          <SectionHeader>Projects – File Explorer View</SectionHeader>
+
+          <p style={{ marginBottom: "10px", color: "var(--color-text-muted)", fontSize: "11px" }}>
+            Showcasing a selection of projects that reflect my skills, creativity,
+            and passion for building meaningful digital experiences.
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gap: "8px",
+            }}
+          >
+            {listProyek.map((project) => (
+              <div
+                key={project.id}
+                className="win2k-raised"
+                style={{
+                  background: "var(--color-window-face)",
+                  cursor: "default",
+                  overflow: "hidden",
+                }}
+                onDoubleClick={() => setSelectedProject(project)}
+              >
+                {/* Mini title bar */}
+                <div
+                  style={{
+                    background: "linear-gradient(to right, var(--color-titlebar-start), var(--color-titlebar-end))",
+                    color: "#fff",
+                    fontSize: "10px",
+                    fontWeight: "bold",
+                    padding: "2px 6px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    userSelect: "none",
+                  }}
+                >
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                    <rect x="0" y="0" width="5" height="5" fill="#f25022" />
+                    <rect x="6" y="0" width="5" height="5" fill="#80ba01" />
+                    <rect x="0" y="6" width="5" height="5" fill="#02a4ef" />
+                    <rect x="6" y="6" width="5" height="5" fill="#ffb902" />
+                  </svg>
+                  {project.title}
+                </div>
+                {/* Thumbnail */}
+                <div
+                  className="win2k-sunken"
+                  style={{ margin: "4px", overflow: "hidden", height: "100px" }}
+                >
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+                {/* Description */}
+                <div style={{ padding: "4px 6px 2px" }}>
+                  <p style={{ fontSize: "10px", color: "var(--color-text-muted)", marginBottom: "6px" }}>
+                    {project.subtitle}
+                  </p>
+                  <button
+                    className="win2k-btn"
+                    style={{ width: "100%", marginBottom: "4px" }}
+                    onClick={() => setSelectedProject(project)}
+                  >
+                    Open
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-        {/* tentang */}
 
-        {/* Proyek */}
-        <div className="proyek mt-32 py-10" id="project" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true"></div>
-        <h1 className="text-center text-4xl font-bold mb-2" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">Project</h1>
-        <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">Showcasing a selection of projects that reflect my skills, creativity, and passion for building meaningful digital experiences.</p>
-        <div className="proyek-box mt-14" >
-
-          <div style={{ height: 'auto', position: 'relative' }} data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true" >
-            <ChromaGrid
-              items={listProyek}
-              onItemClick={handleProjectClick} // Kirim fungsi untuk handle klik
-              radius={500}
-              damping={0.45}
-              fadeOut={0.6}
-              ease="power3.out"
-            />
+          <div className="win2k-statusbar" style={{ marginTop: "8px" }}>
+            <div className="win2k-statusbar-panel">
+              {listProyek.length} objects
+            </div>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>
+              Double-click to open a project
+            </div>
           </div>
-        </div>
-        {/* Proyek */}
+        </Win2KWindow>
 
+        {/* ══ CONTACT WINDOW ══════════════════════════════════ */}
+        <Win2KWindow title="Send Message – Contact Form" id="contact">
+          <SectionHeader>Contact &amp; Send Message</SectionHeader>
 
-        {/* Kontak */}
-        <div className="kontak mt-32 sm:p-10 p-0" id="contact">
-          <h1
-            className="text-4xl mb-2 font-bold text-center"
-            data-aos="fade-up"
-            data-aos-duration="1000"
-            data-aos-once="true"
-          >
-            Contact & Chat
-          </h1>
-          <p
-            className="text-base/loose text-center mb-10 opacity-50"
-            data-aos="fade-up"
-            data-aos-duration="1000"
-            data-aos-delay="300"
-            data-aos-once="true"
-          >
-            Get in touch with me or chat in real-time
+          <p style={{ marginBottom: "10px", color: "var(--color-text-muted)" }}>
+            Get in touch with me or send a message below.
           </p>
 
-          {/* Container dua kolom */}
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Chat Room di kiri */}
-            <div className="flex-1 bg-zinc-800 p-6 rounded-md" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true">
-              <ChatRoom />
+          <form
+            action="https://formsubmit.co/jainchaitanya6@gmail.com"
+            method="POST"
+            autoComplete="off"
+          >
+            {/* Two-column layout */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "8px",
+                marginBottom: "8px",
+              }}
+            >
+              <div>
+                <label className="win2k-label" htmlFor="cf-name">Full Name:</label>
+                <input
+                  id="cf-name"
+                  type="text"
+                  name="Name"
+                  placeholder="John Smith"
+                  required
+                  className="win2k-input"
+                />
+              </div>
+              <div>
+                <label className="win2k-label" htmlFor="cf-email">E-mail Address:</label>
+                <input
+                  id="cf-email"
+                  type="email"
+                  name="Email"
+                  placeholder="john@example.com"
+                  required
+                  className="win2k-input"
+                />
+              </div>
             </div>
 
-            {/* Contact Form di kanan */}
-            <div className="flex-1">
-              <form
-                action="https://formsubmit.co/jainchaitanya6@gmail.com"
-                method="POST"
-                className="bg-zinc-800 p-10 w-full rounded-md"
-                autoComplete="off"
-                data-aos="fade-up"
-                data-aos-duration="1000"
-                data-aos-delay="500"
-                data-aos-once="true"
+            <div style={{ marginBottom: "10px" }}>
+              <label className="win2k-label" htmlFor="cf-msg">Message:</label>
+              <textarea
+                id="cf-msg"
+                name="message"
+                rows={6}
+                placeholder="Type your message here..."
+                required
+                className="win2k-input"
+                style={{ resize: "vertical" }}
+              />
+            </div>
+
+            {/* Dialog-style button row */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "6px",
+                borderTop: "1px solid var(--color-border-dark)",
+                paddingTop: "8px",
+              }}
+            >
+              <button type="submit" className="win2k-btn win2k-btn-primary">
+                Send
+              </button>
+              <button type="reset" className="win2k-btn">
+                Cancel
+              </button>
+            </div>
+          </form>
+
+          {/* Social links row */}
+          <div
+            style={{
+              marginTop: "10px",
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              { label: "GitHub", href: "https://github.com/chaitanyajain18" },
+              { label: "Instagram", href: "https://www.instagram.com/chaitanyajain_18/" },
+              { label: "YouTube", href: "https://www.youtube.com/@chaitanyajain8037" },
+            ].map((s) => (
+              <a
+                key={s.href}
+                href={s.href}
+                target="_blank"
+                rel="noreferrer"
+                className="win2k-btn"
+                style={{ textDecoration: "none", minWidth: "80px", textAlign: "center" }}
               >
-                <div className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold">Full Name</label>
-                    <input
-                      type="text"
-                      name="Name"
-                      placeholder="Input Name..."
-                      className="border border-zinc-500 p-2 rounded-md"
-                      required
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold">Email</label>
-                    <input
-                      type="email"
-                      name="Email"
-                      placeholder="Input Email..."
-                      className="border border-zinc-500 p-2 rounded-md"
-                      required
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="message" className="font-semibold">Message</label>
-                    <textarea
-                      name="message"
-                      id="message"
-                      cols="45"
-                      rows="7"
-                      placeholder="Message..."
-                      className="border border-zinc-500 p-2 rounded-md"
-                      required
-                    ></textarea>
-                  </div>
-                  <div className="text-center">
-                    <button
-                      type="submit"
-                      className="font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full w-full cursor-pointer border border-gray-700 hover:bg-[#222] transition-colors"
-                    >
-                      <ShinyText text="Send" disabled={false} speed={3} className="custom-class" />
-                    </button>
-                  </div>
-                </div>
-              </form>
+                {s.label}
+              </a>
+            ))}
+          </div>
+
+          <div className="win2k-statusbar" style={{ marginTop: "8px" }}>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>
+              jainchaitanya6@gmail.com
             </div>
           </div>
-        </div>
-        {/* Kontak */}
+        </Win2KWindow>
       </main>
 
+      {/* Footer / Taskbar */}
+      <Footer />
+
+      {/* Project Modal */}
       <ProjectModal
         isOpen={!!selectedProject}
-        onClose={handleCloseModal}
+        onClose={() => setSelectedProject(null)}
         project={selectedProject}
       />
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
